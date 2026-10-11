@@ -1,5 +1,5 @@
 /* Football Tracker card – served by the football_tracker integration. */
-const CARD_VERSION = "0.1.1";
+const CARD_VERSION = "0.1.2";
 
 const I18N = {
   de: {
@@ -210,7 +210,7 @@ class FootballTrackerCard extends HTMLElement {
         <div class="hero-top"><span class="comp">${esc(this._comp(m))}</span><span class="status">${status}</span></div>
         <div class="hero-main">
           <div class="side">${this._badge(m.home, "xl")}<div class="name">${esc(this._club(m.home))}</div></div>
-          <div class="centre">${centre}</div>
+          <div class="centre">${this._heroLogo(m)}${centre}</div>
           <div class="side">${this._badge(m.away, "xl")}<div class="name">${esc(this._club(m.away))}</div></div>
         </div>
         <div class="hero-meta"><span>${esc(this._when(date))}</span>${place ? `<span>· ${esc(place)}</span>` : ""}</div>
@@ -275,6 +275,15 @@ class FootballTrackerCard extends HTMLElement {
         ${comp}
         <div class="right">${right}</div>
       </div>`;
+  }
+
+  _heroLogo(m) {
+    // Big competition logo so the tournament is visible at a glance; nothing if ESPN has none.
+    const logo = (this._attrs?.league_logos || {})[m.league_id];
+    if (!logo?.light) return "";
+    const src = this._dark && logo.dark ? logo.dark : logo.light;
+    const fallback = src !== logo.light ? `this.onerror=function(){this.remove()};this.src='${esc(logo.light)}'` : "this.remove()";
+    return `<img class="hero-comp" src="${esc(src)}" alt="${esc(m.league)}" title="${esc(m.league)}" onerror="${fallback}">`;
   }
 
   _leagueLogo(m) {
@@ -472,7 +481,8 @@ const STYLE = `
   .hero-main { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; margin: 14px 0 8px; }
   .side { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; min-width: 0; }
   .name { font-size: 1.1rem; font-weight: 600; line-height: 1.2; }
-  .centre { display: flex; flex-direction: column; align-items: center; }
+  .centre { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .hero-comp { width: 104px; height: 80px; object-fit: contain; }
   .score { font-size: 3.2rem; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -.02em; line-height: 1; }
   .score span, .score-s span { opacity: .45; margin: 0 .12em; }
   .score.is-live { color: var(--ft-live); }
@@ -564,6 +574,7 @@ const STYLE = `
     .tn { display: none; } .ta { display: inline; }
     .tbl .tn { display: inline; }
     .score { font-size: 2.4rem; }
+    .hero-comp { width: 72px; height: 56px; }
     .badge.xl { width: 64px; height: 64px; }
     .name { font-size: .95rem; }
     .tbl .opt { display: none; }

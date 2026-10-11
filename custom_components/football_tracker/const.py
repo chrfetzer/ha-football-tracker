@@ -7,7 +7,7 @@ import logging
 
 DOMAIN = "football_tracker"
 LOGGER = logging.getLogger(__package__)
-VERSION = "0.1.1"
+VERSION = "0.1.2"
 
 CONF_TEAM_ID = "team_id"
 CONF_TEAM_NAME = "team_name"
