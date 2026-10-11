@@ -1,0 +1,63 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Fußballverein folgen",
+        "description": "Suche den Verein, dem du folgen möchtest. Alle Wettbewerbe (Liga, Pokal, Europapokal) werden automatisch einbezogen.",
+        "data": {
+          "team_query": "Vereinsname"
+        }
+      },
+      "pick": {
+        "title": "Verein auswählen",
+        "data": {
+          "team_id": "Verein"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "ESPN ist nicht erreichbar.",
+      "no_teams": "Kein Verein mit diesem Namen gefunden."
+    },
+    "abort": {
+      "already_configured": "Diesem Verein wird bereits gefolgt."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Football Tracker Optionen",
+        "data": {
+          "broadcasts": "TV-Sender (Deutschland)",
+          "kickoff_notice_minutes": "Anpfiff-Erinnerung",
+          "include_friendlies": "Testspiele anzeigen",
+          "history_years": "Kalenderjahre für Ergebnisse"
+        },
+        "data_description": {
+          "broadcasts": "Eine Regel pro Zeile: Teil des Wettbewerbsnamens = Sender. '*' gilt für alle übrigen. Beispiel: Champions League = DAZN, Prime Video",
+          "kickoff_notice_minutes": "Löst so viele Minuten vor Anpfiff ein 'kickoff_soon'-Event aus.",
+          "include_friendlies": "Vorbereitungs- und andere Testspiele anzeigen.",
+          "history_years": "Aktuelles Jahr plus frühere."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "matches": {
+        "name": "Spiele"
+      },
+      "next_match": {
+        "name": "Nächstes Spiel"
+      },
+      "last_result": {
+        "name": "Letztes Ergebnis"
+      }
+    },
+    "binary_sensor": {
+      "live": {
+        "name": "Live"
+      }
+    }
+  }
+}

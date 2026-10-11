@@ -1,0 +1,30 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{--card-background-color:#fff;--primary-text-color:#212121;--secondary-text-color:#727272;--divider-color:rgba(0,0,0,.12);}
+body.dark{--card-background-color:#1c1c1c;--primary-text-color:#e1e1e1;--secondary-text-color:#9b9b9b;--divider-color:rgba(255,255,255,.12);background:#111}
+body{margin:0;padding:16px;background:#f0f0f0;font-family:Roboto,system-ui,sans-serif;color:var(--primary-text-color);display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
+.w{width:640px}.n{width:360px}
+</style></head><body>
+<!-- Two widths side by side only to check the wide and narrow layouts. -->
+<div class="w"><football-tracker-card id="a"></football-tracker-card></div>
+<div class="n"><football-tracker-card id="b"></football-tracker-card></div>
+<script type="module">
+await import("../custom_components/football_tracker/www/football-tracker-card.js?t=" + Date.now());
+const attrs = await (await fetch("sample-attrs.json")).json();
+const p = new URLSearchParams(location.search);
+if (p.get("live")) {
+  // Simulated live match: the next fixture at 2:1 in the 67th minute.
+  const m = attrs.matches.find(x => x.state === "pre");
+  m.state = "in"; m.status = "STATUS_SECOND_HALF"; m.clock = "67'"; m.home.score = 1; m.away.score = 2;
+  const bay = attrs.team.id, opp = m.home.id === bay ? m.away.id : m.home.id;
+  attrs.timelines[m.id] = [
+    {kind:"goal",team_id:bay,player:"Harry Kane",assist:"Michael Olise",minute:"12'"},
+    {kind:"yellow",team_id:opp,player:"Opponent Defender",minute:"28'"},
+    {kind:"penalty",team_id:opp,player:"Opponent Striker",minute:"41'"},
+    {kind:"goal",team_id:bay,player:"Jamal Musiala",assist:"Joshua Kimmich",minute:"58'"},
+    {kind:"red",team_id:opp,player:"Opponent Midfielder",minute:"63'"}];
+}
+if (p.get("dark")) document.body.classList.add("dark");
+const hass = {themes:{darkMode: !!p.get("dark")}, language:"de", locale:{language:"de"}, config:{time_zone:"Europe/Berlin"}, states:{"sensor.bayern_munchen_spiele":{state:"8",attributes:attrs}}};
+for (const id of ["a","b"]) { const c = document.getElementById(id); c.setConfig({entity:"sensor.bayern_munchen_spiele", default_tab: p.get("tab") || "upcoming", ...(p.get("lang") ? {language: p.get("lang")} : {})}); c.hass = hass; }
+</script></body></html>

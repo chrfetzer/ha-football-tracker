@@ -1,0 +1,63 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Follow a football club",
+        "description": "Search for the club you want to follow. All competitions (league, cups, Europe) are included automatically.",
+        "data": {
+          "team_query": "Club name"
+        }
+      },
+      "pick": {
+        "title": "Choose the club",
+        "data": {
+          "team_id": "Club"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "ESPN could not be reached.",
+      "no_teams": "No football club found for this name."
+    },
+    "abort": {
+      "already_configured": "This club is already being followed."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Football Tracker options",
+        "data": {
+          "broadcasts": "Broadcasters (Germany)",
+          "kickoff_notice_minutes": "Kickoff reminder",
+          "include_friendlies": "Include friendlies",
+          "history_years": "Calendar years of results to show"
+        },
+        "data_description": {
+          "broadcasts": "One rule per line: part of the competition name = channels. '*' is the fallback. Example: Champions League = DAZN, Prime Video",
+          "kickoff_notice_minutes": "Fires a 'kickoff_soon' event this many minutes before kickoff.",
+          "include_friendlies": "Show pre-season and other club friendlies.",
+          "history_years": "Current year plus earlier ones."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "matches": {
+        "name": "Matches"
+      },
+      "next_match": {
+        "name": "Next match"
+      },
+      "last_result": {
+        "name": "Last result"
+      }
+    },
+    "binary_sensor": {
+      "live": {
+        "name": "Live"
+      }
+    }
+  }
+}

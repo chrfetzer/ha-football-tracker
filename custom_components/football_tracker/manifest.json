@@ -1,0 +1,13 @@
+{
+  "domain": "football_tracker",
+  "name": "Football Tracker",
+  "codeowners": ["@chrfetzer"],
+  "config_flow": true,
+  "dependencies": ["http", "frontend"],
+  "documentation": "https://github.com/chrfetzer/ha-football-tracker",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/chrfetzer/ha-football-tracker/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}
