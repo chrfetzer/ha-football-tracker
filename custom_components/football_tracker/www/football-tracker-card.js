@@ -1,5 +1,5 @@
 /* Football Tracker card – served by the football_tracker integration. */
-const CARD_VERSION = "0.1.0";
+const CARD_VERSION = "0.1.1";
 
 const I18N = {
   de: {
@@ -262,16 +262,28 @@ class FootballTrackerCard extends HTMLElement {
       : (m.tv_de || []).length
       ? `<span class="tv-s"><ha-icon icon="mdi:television-classic"></ha-icon>${esc(m.tv_de[0])}</span>`
       : "";
-    const sub = [past ? this._round(m) : `${time} · ${this._comp(m)}`, shootout].filter(Boolean).join(" · ");
+    // Fixtures show the competition as a logo column, so the sub line only needs the round.
+    const sub = [past ? this._round(m) : `${time} · ${this._round(m) || m.league}`, shootout].filter(Boolean).join(" · ");
+    const comp = past ? "" : `<div class="comp-logo" title="${esc(m.league)}">${this._leagueLogo(m)}</div>`;
     return `
-      <div class="row">
+      <div class="row ${past ? "" : "with-comp"}">
         <div class="date"><span class="d">${day}</span><span class="mo">${esc(mon)}</span></div>
         <div class="match">
           <div class="teams">${team("home")}${mid}${team("away")}</div>
           ${sub ? `<div class="sub">${esc(sub)}</div>` : ""}
         </div>
+        ${comp}
         <div class="right">${right}</div>
       </div>`;
+  }
+
+  _leagueLogo(m) {
+    const logo = (this._attrs?.league_logos || {})[m.league_id];
+    const text = `<span class="comp-name">${esc(m.league)}</span>`;
+    if (!logo?.light) return text;
+    const src = this._dark && logo.dark ? logo.dark : logo.light;
+    const fallback = src !== logo.light ? `this.onerror=null;this.src='${esc(logo.light)}'` : `this.replaceWith(this.nextElementSibling.content.cloneNode(true))`;
+    return `<img src="${esc(src)}" alt="${esc(m.league)}" onerror="${fallback}"><template>${text}</template>`;
   }
 
   _upcoming(matches, heroId) {
@@ -368,6 +380,7 @@ class FootballTrackerCard extends HTMLElement {
     }
     this._dark = !!this._hass?.themes?.darkMode;
     const attrs = state.attributes;
+    this._attrs = attrs;
     const matches = attrs.matches || [];
     const team = attrs.team || {};
     const live = matches.filter((m) => m.state === "in");
@@ -497,7 +510,11 @@ const STYLE = `
   .gh { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 4px 4px; font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--secondary-text-color); font-weight: 600; }
   .rec { font-variant-numeric: tabular-nums; letter-spacing: 0; }
   .row { display: grid; grid-template-columns: 48px 1fr auto; gap: 10px; align-items: center; padding: 10px 4px; border-bottom: 1px solid var(--divider-color); }
+  .row.with-comp { grid-template-columns: 48px 1fr 40px auto; }
   .row:last-child { border-bottom: 0; }
+  .comp-logo { display: flex; align-items: center; justify-content: center; width: 40px; height: 32px; }
+  .comp-logo img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .comp-name { font-size: .64rem; font-weight: 600; line-height: 1.1; text-align: center; color: var(--secondary-text-color); }
   .date { display: flex; flex-direction: column; align-items: center; line-height: 1.05; }
   .date .d { font-size: 1.3rem; font-weight: 700; }
   .date .mo { font-size: .72rem; text-transform: uppercase; color: var(--secondary-text-color); }
@@ -552,6 +569,8 @@ const STYLE = `
     .tbl .opt { display: none; }
     .lineups { grid-template-columns: 1fr; }
     .row { grid-template-columns: 34px 1fr auto; gap: 6px; }
+    .row.with-comp { grid-template-columns: 34px 1fr 30px auto; }
+    .comp-logo { width: 30px; height: 26px; }
     .teams { gap: 6px; }
     .tv-s { display: none; }
   }

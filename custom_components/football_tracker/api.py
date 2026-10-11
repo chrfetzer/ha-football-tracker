@@ -75,6 +75,18 @@ class EspnClient:
     async def standings(self, league: str) -> dict:
         return await self._get(f"{STANDINGS}/{league}/standings")
 
+    async def league_logos(self, league: str) -> dict[str, str]:
+        """Return {"light": url, "dark": url} for a competition (may be empty)."""
+        data = await self._get(f"{SITE}/{league}/scoreboard")
+        logos: dict[str, str] = {}
+        for league_info in data.get("leagues") or []:
+            for logo in league_info.get("logos") or []:
+                href = logo.get("href") or ""
+                if not href or "default-team-logo" in href:
+                    continue  # ESPN's placeholder, e.g. for the Supercup
+                logos["dark" if "dark" in (logo.get("rel") or []) else "light"] = href
+        return logos
+
 
 def short_league(name: str) -> str:
     return LEAGUE_NAMES.get(name, name)

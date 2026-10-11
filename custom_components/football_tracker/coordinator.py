@@ -107,6 +107,7 @@ class FootballCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._lineups: dict[str, dict] = {}
         self._standings: dict[str, dict] = {}
         self._standings_at: dict[str, datetime] = {}
+        self._league_logos: dict[str, dict[str, str]] = {}
         self._kickoff_noticed: set[str] = set()
         self._team_info: dict[str, Any] = {"id": self.team_id, "name": self.team_name}
 
@@ -206,6 +207,7 @@ class FootballCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 self._lineups[eid] = result["lineups"]
 
         await self._refresh_tables(now, newly_finished)
+        await self._refresh_league_logos()
         if newly_finished:
             self._save()
         self.update_interval = self._next_interval(now)
@@ -232,6 +234,19 @@ class FootballCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 self._standings[league] = {"groups": groups}
             else:
                 self._standings.pop(league, None)
+
+    async def _refresh_league_logos(self) -> None:
+        """Competition logos rarely change: fetch each once per Home Assistant run."""
+        missing = sorted(set(self._index.values()) - set(self._league_logos))
+
+        async def fetch(league: str) -> None:
+            async with _FETCH_LIMIT:
+                try:
+                    self._league_logos[league] = await self.api.league_logos(league)
+                except EspnError as err:
+                    LOGGER.debug("Could not fetch logo for %s: %s", league, err)
+
+        await asyncio.gather(*(fetch(lg) for lg in missing))
 
     def _capture_team_info(self, match: dict) -> None:
         for side in ("home", "away"):
@@ -412,6 +427,7 @@ class FootballCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             "timelines": {k: v for k, v in self._timelines.items() if k in focus_ids and v},
             "lineups": {k: v for k, v in self._lineups.items() if k in focus_ids},
             "standings": self._standings,
+            "league_logos": {k: v for k, v in self._league_logos.items() if v},
             "updated": now.isoformat(),
         }
 

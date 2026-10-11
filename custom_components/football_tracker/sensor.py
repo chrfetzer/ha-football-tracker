@@ -35,7 +35,7 @@ class MatchesSensor(FootballEntity, SensorEntity):
     _attr_icon = "mdi:soccer"
     # Large and changing constantly during matches: keep it out of the database.
     _unrecorded_attributes = frozenset(
-        {"team", "matches", "live", "timelines", "lineups", "standings", "updated"}
+        {"team", "matches", "live", "timelines", "lineups", "standings", "league_logos", "updated"}
     )
 
     @property
@@ -53,6 +53,7 @@ class MatchesSensor(FootballEntity, SensorEntity):
             "timelines": data["timelines"],
             "lineups": data["lineups"],
             "standings": data["standings"],
+            "league_logos": data["league_logos"],
             "updated": data["updated"],
         }
 

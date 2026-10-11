@@ -9,7 +9,7 @@ Includes a dashboard card made for wall tablets:
 
 - **Live** panel with score, minute and timeline (goals with scorer and assist, penalties, own goals, cards) – refreshes every 20 s
 - **Next match** with countdown, venue, round (e.g. *Champions League · Ligaphase · 2. Spieltag*) and German TV channels
-- **Fixtures**, **results grouped by competition and season** (filter chips), penalty shootouts (*i.E.*)
+- **Fixtures** with competition logos, **results grouped by competition and season** (filter chips), penalty shootouts (*i.E.*)
 - **Tables** for Bundesliga and the Champions League league phase with qualification zones
 - **Lineups** with formation, bench and substitutions as soon as ESPN publishes them
 - Club crests (dark-mode variants when available), German (default) or English, follows your HA light/dark theme
